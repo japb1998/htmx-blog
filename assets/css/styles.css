@@ -1,0 +1,48 @@
+
+/* variables */
+:root {
+    --primary-blue: #2D3047;
+    --secondary-blue: #93B7BE;
+    --button-primary-color: #E0CA3C;
+    --button-warning-color: #f51720;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: "Fjalla One", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+* {
+font-family: "Space Grotesk", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+/* styles */
+.button-primary {
+    background-color: var(--button-primary-color) !important;
+    color: #fff;
+    cursor: pointer;
+}
+
+.main-section {
+    background-color: var(--primary-blue);
+    color: black !important;
+    padding: 2rem;
+    border-radius: 0 0 0.5rem 0.5rem !important
+}
+
+.main-section h1,div, ul{
+    color: #fff;
+}
+
+.header {
+    background-color: var(--secondary-blue);
+    color: #fff;
+    padding: 1rem;
+}
+
+
+#post-form input,textarea {  
+    color : black !important;
+}

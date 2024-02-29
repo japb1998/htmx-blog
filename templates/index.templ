@@ -1,0 +1,170 @@
+package templates
+
+import "github.com/japb1998/htmx-blog/blog"
+import "time"
+import "strconv"
+
+templ Index(loggedIn bool, title string, count int, children templ.Component) {
+	<!DOCTYPE html/>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<style>
+			@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Space+Grotesk:wght@300;700&display=swap')
+			</style>
+			<link rel="stylesheet" href="/static/css/styles.css"/>
+			<script src="https://cdn.tailwindcss.com"></script>
+			<script src="//unpkg.com/alpinejs" defer></script>
+			<script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+			<title>Htmx Blog | { title } </title>
+			<script src="/static/js/index.js" defer></script>
+		</head>
+		<body>
+			@Header(loggedIn, count)
+			<main id="main" class="xl:container mx-auto main-section h-[80vh]">
+				@children 
+			</main>
+		</body>
+	</html>
+}
+
+templ Login() {
+	<h1 class="text-4xl mx-auto text-center p-2 h-[20%]">Login 👋</h1>
+	<ul class="h-[80%]">
+		<li class="rounded-lg bg-white text-black w-fit m-auto"><a class="m-2" href="/auth/google">Login Using Google 🔓</a></li>
+	</ul>
+}
+
+templ Home(username string) {
+	<div class="flex flex-col justify-evenly align-center min-h-[80vh]">
+		<h1 class="text-2xl mx-auto">Home 🏠</h1>
+		<p class="text-4xl text-center font-bold">Welcome to the htmx blog <span class="text-xl">{ username }</span> 👋</p>
+		<p class="text-lg text-center">Would you like to create a new Post?</p>
+		<button class="rounded drop-shadow-md button-primary p-2 text-center text-xs w-fit mx-auto" hx-get="/editor" hx-swap="innerHTML" hx-target="#main">Create a new post 📝</button>
+	</div>
+}
+
+templ Editor() {
+		<div class="min-h-full">
+			<h1 class="text-4xl mx-auto text-center p-2 min-h-[20%]">Create a new Post 📝</h1>
+			@PostForm("")
+		</div>
+}
+
+templ PostForm(id string) {
+	<div id="post-form" class="min-h-[80%]">
+		<form
+			class="flex flex-col align-center justify-evenly mx-auto blog-form block w-[80%]"
+			hx-confirm="Are you sure you want to create this post ?"
+			if id != "" {
+				hx-put={"/post/" + id }
+			} else {
+				hx-post="/post"
+			}
+			hx-indicator="#indicator"
+			hx-swap="outerHTML"
+			hx-target="#post-form"
+		>
+			<div class="w-full">
+				<label for="title" class="text-xl block pb-2">Title</label>
+				<input type="text" name="title" placeholder="Title" class="w-80 rounded-lg p-2 text-black"/>
+			</div>
+			<div  x-data="{ textContent: '' }">
+				<label for="body" class="text-xl block pb-2">Content</label>
+				<textarea
+					name="body"
+					placeholder="Body"
+					class="rounded-lg p-2 w-full h-full text-black"
+					x-text="textContent"
+					@keyup="textContent = $event.target.value;"
+				></textarea>
+				<span class="text-white text-xs text-right w-full" x-text="`${355 - textContent.length}/355`"></span>
+			</div>
+			<button
+				type="submit"
+				class="w-fit text-center cursor-pointer button-primary p-2 rounded-lg mx-auto"
+			>Create</button>
+		</form>
+		<div id="indicator" class="htmx-indicator text-2xl text-center">Creating Post 🕧</div>
+	</div>
+}
+
+templ PostListPage(creator string, ps []blog.Blog) {
+		<h1 class="text-4xl mx-auto text-center p-2">Posts 📝</h1>
+		@PostList(creator, ps)
+}
+
+templ PostList(creator string, ps []blog.Blog) {
+	<ul id="posts-list" class="w-[80%] mx-auto flex gap-4 flex-wrap" hx-get="/post/list"
+		hx-trigger="every 4s"
+		hx-swap="outerHTML"
+	>
+		if len(ps) != 0 {
+			for _, p := range ps {
+				<li class="w-[30%] px-2 pt-6 pb-4 rounded-lg bg-white text-gray-700 relative">
+					if creator != p.Creator {
+					<div
+						class="absolute text-red-700 text-center text-xs left-2 top-2 hover:underline hover:underline-offset-4 cursor-pointer"
+						hx-delete={ "/post/" + strconv.Itoa(p.ID) }
+						hx-target="#posts-list"
+						hx-swap="outerHTML"
+					>
+						[x delete]
+					</div>
+}
+					<h2 class="text-3xl leading-loose">{ p.Title }</h2>
+					<div class="relative flex py-2 items-center">
+						<div class="flex-grow border-t border-gray-400"></div>
+						<span class="flex-shrink mx-4 text-xs text-gray-400">Content</span>
+						<div class="flex-grow border-t border-gray-400"></div>
+					</div>
+					<p class="text-md leading-3 leading-relaxed">
+						{ p.Body }
+					</p>
+					<div class="relative flex py-5 items-center">
+						<div class="flex-grow border-t border-gray-400"></div>
+					</div>
+					<p class="text-xs text-gray-400 w-full">Created By: { p.Creator }</p> 
+					<p class="text-xs text-gray-400 w-full">Created At: { p.CreatedAt.Format(time.DateTime) }</p>
+				</li>
+			}
+		} else {
+			<p class="text-2xl mx-auto">No Posts Found</p>
+		}
+	</ul>
+}
+
+templ Header(loggedIn bool, count int) {
+	
+		<div class="xl:container flex justify-between mx-auto min-h-[5vh] header">
+			<a hx-get="/" hx-target="#main" hx-swap="innerHTML" class="text-3xl">
+				<h1 class="text-black inline">HTM</h1><h1 class="text-sky-700 inline">X</h1> <span
+				class="text-lg">Blog</span></a>
+			<ul class="flex justify-between items-center text-sm">
+				if loggedIn {
+					@PostCount(count)
+					<a hx-get="/post" hx-target="#main" hx-push-url="true" hx-swap="innerHTML" class="text-md px-2">See Posts</a>
+					<a hx-get="/editor" hx-target="#main" hx-push-url="true" hx-swap="innerHTML" class="text-md px-2 ">Create a new post 📝</a>
+					<a hx-get="/auth/logout" hx-target="#main" hx-push-url="true" hx-swap="innerHTML" class="text-md px-2">Logout ❌</a>
+				} else {
+					<a hx-get="/login" hx-target="#main" hx-push-url="true" hx-swap="innerHTML" class="text-md px-2">Login</a>
+				}
+			</ul>
+		</div>
+
+}
+
+templ PostCount(c int) {
+	<div
+		class="p-2 relative"
+		hx-get="/count"
+		hx-trigger="every 4s"
+		hx-swap="outerHTML"
+	>
+		<span
+			class="p-[1px] rounded-full w-4 h-4 bg-red-700 text-center absolute top-0 right-0 text-xs text-white"
+		>{ strconv.Itoa(c) }</span>📑
+	</div>
+}

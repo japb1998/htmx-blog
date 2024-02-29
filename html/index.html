@@ -1,0 +1,164 @@
+<!DOCTYPE html />
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"
+        integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+        crossorigin="anonymous"></script>
+    <title>Htmx Blog</title>
+</head>
+
+<body>
+    <div class="flex w-full">
+        <div class="xl:container lg:container flex justify-between mx-auto min-h-[5vh] header">
+            <a href="/" class="text-3xl"><span class="text-black">HTM</span><span class="text-sky-700">X</span> <span
+                    class="text-lg">Blog</span></a>
+            <ul class="flex justify-between items-center text-sm">
+                if loggedIn {
+                <a href="/auth/logout" class="text-md px-2">Logout</a>
+                <a class="text-md px-2 ">Create a new post 📝</a>
+                <div class="p-2 relative"><span
+                        class="p-[1px] rounded-full w-4 h-4 bg-red-700 text-center absolute top-0 right-0 text-xs"
+                        hx-get="/messages" hx-trigger="load delay:4s" hx-swap="outerHTML"
+                        >0</span>🔔
+                </div>
+                } else {
+                <a href="/login" class="text-md px-2">Login</a>
+                }
+            </ul>
+        </div>
+    </div>
+    <section class="xl:container lg:container mx-auto">
+        <div class="flex flex-col justify-evenly align-center min-h-[80vh] hero">
+            <h1 class="text-4xl mx-auto">Home 🏠</h1>
+            <p class="text-2xl text-center">Welcome to the htmx blog <span class="text-xl">{ username }</span> 👋</p>
+            <p class="text-xl text-center">Would you like to create a new Post?</p>
+
+            <button class="rounded drop-shadow-md button-primary p-2 text-center text-xs w-fit mx-auto"> Create a new
+                post 📝</button>
+        </div>
+    </section>
+    <section class="xl:container lg:container mx-auto">
+        <div class="flex flex-col align-center min-h-[80vh] blog-section">
+            <h1 class="text-4xl mx-auto text-center p-2">Create a new Post 📝</h1>
+            <form hx-post="post" class="flex flex-col align-center justify-evenly mx-auto min-w-[80%] h-96 blog-form"
+                hx-confirm="Are you sure you want to create this post ?" hx-post="/post" hx-indicator="#indicator">
+                <div class="w-full">
+                    <label for="title" class="text-xl block pb-2">Title</label>
+                    <input type="text" name="title" placeholder="Title" class="w-80 rounded-lg p-2" />
+                </div>
+                <div class="w-full" x-data="{ textContent: '' }">
+                    <label for="body" class="text-xl block pb-2">Content</label>
+                    <textarea name="body" placeholder="Body" class="rounded-lg p-2 w-full min-h-80" x-text="textContent"
+                        @keyup="textContent = $event.target.value;"></textarea>
+                    <span class="text-white text-xs text-right w-full" x-text="`${355 - textContent.length}/355`">
+                    </span>
+                </div>
+                <button type="submit"
+                    class="w-20 text-center cursor-pointer button-primary p-2 rounded-lg mx-auto">Create</button>
+            </form>
+            <div id="indicator" class="htmx-indicator text-2xl text-center">Creating Post 🕧</div>
+        </div>
+    </section>
+    <section class="xl:container lg:container mx-auto blog-section">
+
+        <h1 class="text-4xl mx-auto text-center p-2">Posts 📝</h1>
+        <ul class="w-[80%] mx-auto flex gap-4 flex-wrap">
+            <li class="w-[30%] px-2 pt-6 pb-4 rounded-lg bg-white text-gray-700 relative">
+                <div
+                    class="absolute text-red-700 text-center text-xs left-2 top-2 hover:underline hover:underline-offset-4 cursor-pointer">
+                    [close x]</div>
+                <h2 class="text-3xl leading-loose">{title}</h2>
+                <div class="relative flex py-5 items-center">
+                    <div class="flex-grow border-t border-gray-400"></div>
+                    <span class="flex-shrink mx-4 text-gray-400">Content</span>
+                    <div class="flex-grow border-t border-gray-400"></div>
+                </div>
+                <p class="text-md leading-3 leading-relaxed">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit facilis
+                    voluptatibus delectus et, eum aut! Obcaecati quasi voluptatem dolorum, vero numquam
+                    molestias voluptatum quo. Dolores quia quo possimus beatae numquam!
+                </p>
+                <div class="relative flex py-5 items-center">
+                    <div class="flex-grow border-t border-gray-400"></div>
+                </div>
+                <p class="text-xs text-gray-400 w-full text-right">Created At: {createdAt}</p>
+            </li>
+            <li class="w-[30%] px-2 pt-6 pb-4 rounded-lg bg-white text-gray-700 relative">
+                <div
+                    class="absolute text-red-700 text-center text-xs left-2 top-2 hover:underline hover:underline-offset-4 cursor-pointer">
+                    [close x]</div>
+                <h2 class="text-3xl leading-loose">{title}</h2>
+                <div class="relative flex py-5 items-center">
+                    <div class="flex-grow border-t border-gray-400"></div>
+                    <span class="flex-shrink mx-4 text-gray-400">Content</span>
+                    <div class="flex-grow border-t border-gray-400"></div>
+                </div>
+                <p class="text-md leading-3 leading-relaxed">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit facilis
+                    voluptatibus delectus et, eum aut! Obcaecati quasi voluptatem dolorum, vero numquam
+                    molestias voluptatum quo. Dolores quia quo possimus beatae numquam!
+                </p>
+                <div class="relative flex py-5 items-center">
+                    <div class="flex-grow border-t border-gray-400"></div>
+                </div>
+                <p class="text-xs text-gray-400 w-full text-right">Created At: {createdAt}</p>
+            </li>
+            <li class="w-[30%] px-2 pt-6 pb-4 rounded-lg bg-white text-gray-700 relative">
+                <div
+                    class="absolute text-red-700 text-center text-xs left-2 top-2 hover:underline hover:underline-offset-4 cursor-pointer">
+                    [close x]</div>
+                <h2 class="text-3xl leading-loose">{title}</h2>
+                <div class="relative flex py-5 items-center">
+                    <div class="flex-grow border-t border-gray-400"></div>
+                    <span class="flex-shrink mx-4 text-gray-400">Content</span>
+                    <div class="flex-grow border-t border-gray-400"></div>
+                </div>
+                <p class="text-md leading-3 leading-relaxed">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit facilis
+                    voluptatibus delectus et, eum aut! Obcaecati quasi voluptatem dolorum, vero numquam
+                    molestias voluptatum quo. Dolores quia quo possimus beatae numquam!
+                </p>
+                <div class="relative flex py-5 items-center">
+                    <div class="flex-grow border-t border-gray-400"></div>
+                </div>
+                <p class="text-xs text-gray-400 w-full text-right">Created At: {createdAt}</p>
+            </li>
+            <li class="w-[30%] px-2 pt-6 pb-4 rounded-lg bg-white text-gray-700 relative">
+                <div
+                    class="absolute text-red-700 text-center text-xs left-2 top-2 hover:underline hover:underline-offset-4 cursor-pointer">
+                    [close x]</div>
+                <h2 class="text-3xl leading-loose">{title}</h2>
+                <div class="relative flex py-5 items-center">
+                    <div class="flex-grow border-t border-gray-400"></div>
+                    <span class="flex-shrink mx-4 text-gray-400">Content</span>
+                    <div class="flex-grow border-t border-gray-400"></div>
+                </div>
+                <p class="text-md leading-3 leading-relaxed">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit facilis
+                    voluptatibus delectus et, eum aut! Obcaecati quasi voluptatem dolorum, vero numquam
+                    molestias voluptatum quo. Dolores quia quo possimus beatae numquam!
+                </p>
+                <div class="relative flex py-5 items-center">
+                    <div class="flex-grow border-t border-gray-400"></div>
+                </div>
+                <p class="text-xs text-gray-400 w-full text-right">Created At: {createdAt}</p>
+            </li>
+        </ul>
+    </section>
+    <section class="xl:container lg:container mx-auto blog-section h-[80vh]">
+
+        <h1 class="text-4xl mx-auto text-center p-2 h-[20%]">Login 👋</h1>
+        <ul class="h-[80%]">
+            <li class="p-4 rounded-lg bg-white text-black w-fit m-auto">Login Using Google 🔓</li>
+        </ul>
+    </section>
+</body>
+
+</html>
